@@ -7,14 +7,14 @@
       <button
         @click="startSimulation"
         :disabled="simulationState === 'running'"
-        class="px-6 py-2 bg-green-500 text-white rounded-lg shadow hover:bg-green-600 transition disabled:opacity-50 flex items-center"
+        class="px-6 py-2 bg-green-500 text-black rounded-lg shadow hover:bg-green-600 transition disabled:opacity-50 flex items-center"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-5 w-5 mr-2"
           fill="none"
           viewBox="0 0 24 24"
-          stroke="currentColor"
+          stroke="black"
         >
           <path
             stroke-linecap="round"
@@ -28,14 +28,14 @@
       <button
         @click="pauseSimulation"
         :disabled="simulationState !== 'running'"
-        class="px-6 py-2 bg-yellow-500 text-white rounded-lg shadow hover:bg-yellow-600 transition disabled:opacity-50 flex items-center"
+        class="px-6 py-2 bg-yellow-500 text-black rounded-lg shadow hover:bg-yellow-600 transition disabled:opacity-50 flex items-center"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-5 w-5 mr-2"
           fill="none"
           viewBox="0 0 24 24"
-          stroke="currentColor"
+          stroke="black"
         >
           <path
             stroke-linecap="round"
@@ -49,14 +49,14 @@
       <button
         @click="stepSimulation"
         :disabled="simulationState === 'running'"
-        class="px-6 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 transition disabled:opacity-50 flex items-center"
+        class="px-6 py-2 bg-blue-500 text-black rounded-lg shadow hover:bg-blue-600 transition disabled:opacity-50 flex items-center"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-5 w-5 mr-2"
           fill="none"
           viewBox="0 0 24 24"
-          stroke="currentColor"
+          stroke="black"
         >
           <path
             stroke-linecap="round"

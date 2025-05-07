@@ -1,9 +1,9 @@
 <template>
-  <div class="max-w-xl mx-auto py-8">
+  <div class="max-w-xl mx-auto py-[10px]">
     <h2 class="text-2xl font-bold mb-6 text-indigo-700 text-center">
       Statut de la Simulation
     </h2>
-    <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col gap-4">
+    <div class="bg-white rounded-xl shadow-lg p-[30px] flex flex-col gap-4">
       <div class="flex justify-between items-center">
         <span class="font-semibold text-gray-700">Étape actuelle :</span>
         <span class="text-lg font-bold text-indigo-700">{{ status.step }}</span>

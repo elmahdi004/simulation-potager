@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto py-8">
+  <div class="container mx-auto p-8">
     <h2 class="text-3xl font-bold mb-6 text-emerald-700 text-center">
       Grille du Potager
     </h2>
