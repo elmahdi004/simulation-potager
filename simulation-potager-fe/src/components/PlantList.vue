@@ -40,20 +40,16 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "PlantList",
-  data() {
-    return {
-      plants: [
-        { id: 1, species: "Tomate", age: 3, isMature: false },
-        { id: 2, species: "Carotte", age: 5, isMature: true },
-        { id: 3, species: "Laitue", age: 2, isMature: false },
-        { id: 4, species: "Aubergine", age: 6, isMature: true },
-      ],
-    };
-  },
-};
+<script setup>
+import { ref, onMounted } from "vue";
+import plantService from "../services/plantService";
+
+const plants = ref([]);
+
+onMounted(async () => {
+  const res = await plantService.getAll();
+  plants.value = res.data;
+});
 </script>
 
 <style scoped></style>

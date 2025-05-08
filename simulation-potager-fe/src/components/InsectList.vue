@@ -15,23 +15,26 @@
           <span class="text-2xl font-bold text-blue-700">🐞</span>
         </div>
         <h3 class="text-xl font-semibold text-gray-800 mb-2">
-          {{ insect.species }}
+          {{ insect.espece }}
         </h3>
         <p class="text-gray-600">
-          Sexe : <span class="font-medium">{{ insect.sex }}</span>
+          Sexe : <span class="font-medium">{{ insect.sexe }}</span>
         </p>
         <p class="text-gray-600">
           Indice de santé :
-          <span
-            :class="insect.healthIndex > 5 ? 'text-green-600' : 'text-red-500'"
-            >{{ insect.healthIndex }}</span
-          >
+          <span :class="insect.sante > 5 ? 'text-green-600' : 'text-red-500'">{{
+            insect.sante
+          }}</span>
         </p>
         <p class="text-gray-600">
-          Mobilité : <span class="font-medium">{{ insect.mobility }}</span>
+          Mobilité : <span class="font-medium">{{ insect.mobilite }}</span>
         </p>
         <p class="text-gray-600">
-          Résistance : <span class="font-medium">{{ insect.resistance }}</span>
+          Résistance Insecticide :
+          <span class="font-medium">{{ insect.resistanceInsecticide }}</span>
+        </p>
+        <p class="text-gray-600" v-if="insect.parcelle">
+          Parcelle : <span class="font-medium">{{ insect.parcelle.id }}</span>
         </p>
       </div>
     </div>
@@ -41,48 +44,16 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "InsectList",
-  data() {
-    return {
-      insects: [
-        {
-          id: 1,
-          species: "Coccinelle",
-          sex: "Femelle",
-          healthIndex: 8,
-          mobility: "Haute",
-          resistance: "Forte",
-        },
-        {
-          id: 2,
-          species: "Puceron",
-          sex: "Mâle",
-          healthIndex: 4,
-          mobility: "Moyenne",
-          resistance: "Faible",
-        },
-        {
-          id: 3,
-          species: "Papillon",
-          sex: "Femelle",
-          healthIndex: 7,
-          mobility: "Haute",
-          resistance: "Moyenne",
-        },
-        {
-          id: 4,
-          species: "Ver",
-          sex: "Mâle",
-          healthIndex: 6,
-          mobility: "Faible",
-          resistance: "Forte",
-        },
-      ],
-    };
-  },
-};
+<script setup>
+import { ref, onMounted } from "vue";
+import insectService from "../services/insectService";
+
+const insects = ref([]);
+
+onMounted(async () => {
+  const res = await insectService.getAll();
+  insects.value = res.data;
+});
 </script>
 
 <style scoped></style>

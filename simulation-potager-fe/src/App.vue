@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import PlantList from "./components/PlantList.vue";
 import PlantDetail from "./components/PlantDetail.vue";
 import InsectList from "./components/InsectList.vue";
@@ -8,12 +8,21 @@ import PlotGrid from "./components/PlotGrid.vue";
 import TreatmentDeviceList from "./components/TreatmentDeviceList.vue";
 import SimulationControl from "./components/SimulationControl.vue";
 import SimulationStatus from "./components/SimulationStatus.vue";
+import plotService from "./services/plotService";
 
-// (your existing data & methods here)
+const plots = ref([]);
+
+onMounted(async () => {
+  const res = await plotService.getAll();
+  console.log("Fetched plots:", res.data, Array.isArray(res.data));
+  plots.value = Array.isArray(res.data) ? res.data : Object.values(res.data);
+});
 </script>
 
 <template>
-  <div class="min-h-screen grid grid-rows-[auto_1fr_auto] bg-gradient-to-b from-white via-blue-50 to-green-50">
+  <div
+    class="min-h-screen grid grid-rows-[auto_1fr_auto] bg-gradient-to-b from-white via-blue-50 to-green-50"
+  >
     <!-- Header -->
     <header class="w-full max-w-7xl mx-auto py-8 text-center">
       <div class="flex flex-col items-center gap-2">
@@ -21,7 +30,9 @@ import SimulationStatus from "./components/SimulationStatus.vue";
         <h1 class="text-2xl font-bold text-gray-700 tracking-tight">
           Simulation Potager Automatisé
         </h1>
-        <span class="text-sm text-gray-400">Université Cadi Ayyad - EST Safi</span>
+        <span class="text-sm text-gray-400"
+          >Université Cadi Ayyad - EST Safi</span
+        >
       </div>
     </header>
 
@@ -29,10 +40,14 @@ import SimulationStatus from "./components/SimulationStatus.vue";
     <main class="w-full max-w-7xl mx-auto grid grid-cols-12 gap-8 px-4 pb-8">
       <!-- Left sidebar: Plants & Insects -->
       <aside class="col-span-3 flex flex-col space-y-6">
-        <section class="bg-white/90 rounded-2xl shadow p-5 flex-1 overflow-y-auto">
+        <section
+          class="bg-white/90 rounded-2xl shadow p-5 flex-1 overflow-y-auto"
+        >
           <PlantList :plants="plants" @select="selectPlant" />
         </section>
-        <section class="bg-white/90 rounded-2xl shadow p-5 flex-1 overflow-y-auto">
+        <section
+          class="bg-white/90 rounded-2xl shadow p-5 flex-1 overflow-y-auto"
+        >
           <InsectList :insects="insects" @select="selectInsect" />
         </section>
       </aside>
@@ -51,34 +66,41 @@ import SimulationStatus from "./components/SimulationStatus.vue";
         </div> -->
       </section>
       <div
-      class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white/90 rounded-2xl shadow-lg p-4 z-50"
-      style="width:90%; max-width:400px;"
-    >
-      <SimulationControl
-        @start="startSimulation"
-        @pause="pauseSimulation"
-        @step="stepSimulation"
-      />
-    </div>
+        class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white/90 rounded-2xl shadow-lg p-4 z-50"
+        style="width: 90%; max-width: 400px"
+      >
+        <SimulationControl
+          @start="startSimulation"
+          @pause="pauseSimulation"
+          @step="stepSimulation"
+        />
+      </div>
       <!-- Right sidebar: Stats & Devices -->
       <aside class="col-span-3 flex flex-col space-y-6 gap-y-4">
         <section class="bg-white/90 rounded-2xl shadow p-5">
           <SimulationStatus :status="simulationStatus" />
         </section>
-        <section class="bg-white/90 rounded-2xl shadow p-5 flex-1 overflow-y-auto">
+        <section
+          class="bg-white/90 rounded-2xl shadow p-5 flex-1 overflow-y-auto"
+        >
           <TreatmentDeviceList :devices="devices" />
         </section>
         <section class="bg-white/90 rounded-2xl shadow p-5 flex-1">
           <PlantDetail v-if="selectedPlant" :plant="selectedPlant" />
           <InsectDetail v-else-if="selectedInsect" :insect="selectedInsect" />
-          <p v-else class="text-gray-500">Sélectionnez une plante ou un insecte.</p>
+          <p v-else class="text-gray-500">
+            Sélectionnez une plante ou un insecte.
+          </p>
         </section>
       </aside>
     </main>
 
     <!-- Footer -->
-    <footer class="w-full max-w-7xl mx-auto py-6 text-center text-gray-300 text-xs">
-      © {{ new Date().getFullYear() }} Simulation Potager Automatisé — Projet Universitaire
+    <footer
+      class="w-full max-w-7xl mx-auto py-6 text-center text-gray-300 text-xs"
+    >
+      © {{ new Date().getFullYear() }} Simulation Potager Automatisé — Projet
+      Universitaire
     </footer>
   </div>
 </template>

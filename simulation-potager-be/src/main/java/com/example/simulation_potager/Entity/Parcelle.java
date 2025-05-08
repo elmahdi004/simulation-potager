@@ -1,6 +1,7 @@
 package com.example.simulation_potager.Entity;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.util.List;
 
@@ -18,10 +19,12 @@ public class Parcelle {
 
         // Une parcelle peut avoir plusieurs plantes
         @OneToMany(mappedBy = "parcelle", cascade = CascadeType.ALL, orphanRemoval = true)
+        @JsonManagedReference
         private List<Plante> plantes;
 
         // Une parcelle peut avoir plusieurs insectes
         @OneToMany(mappedBy = "parcelle", cascade = CascadeType.ALL, orphanRemoval = true)
+        @JsonManagedReference
         private List<Insecte> insectes;
 
         // Une parcelle peut avoir un seul dispositif
