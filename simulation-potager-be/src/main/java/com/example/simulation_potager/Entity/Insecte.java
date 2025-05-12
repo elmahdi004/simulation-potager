@@ -1,5 +1,7 @@
 package com.example.simulation_potager.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -22,6 +24,7 @@ public class Insecte {
     // Lien avec la parcelle où se trouve l’insecte
     @ManyToOne
     @JoinColumn(name = "parcelle_id")
+    @JsonIgnore
     private Parcelle parcelle;
 
     // Getters & Setters

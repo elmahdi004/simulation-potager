@@ -1,5 +1,5 @@
 <script setup>
-import { computed, watch , onMounted, ref } from "vue";
+import { computed, watch, onMounted, ref } from "vue";
 import plotService from "../services/plotService";
 
 const plots = ref([]);
@@ -7,10 +7,18 @@ const plots = ref([]);
 onMounted(async () => {
   const res = await plotService.getAll();
   plots.value = res.data;
-  console.log(plots.value);
+  console.log(plots.value[0]);
 });
 
+// Listen for simulation steps
+const handleSimulationStep = async () => {
+  const res = await plotService.getAll();
+  plots.value = res.data;
+};
 
+defineExpose({
+  handleSimulationStep,
+});
 
 // const props = defineProps({
 //   plots: {
@@ -24,10 +32,8 @@ const COLS = 6;
 
 function getParcelle(x, y) {
   // if (!Array.isArray(plots.value)) return null;
-  // return plots.value.find((p) => p.x === x && p.y === y) || null;
+  return plots.value.find((p) => p.x === x && p.y === y) || null;
 }
-
-
 </script>
 
 <template>

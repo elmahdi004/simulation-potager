@@ -1,5 +1,6 @@
 package com.example.simulation_potager.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 @Entity
@@ -13,7 +14,9 @@ public class Plante {
     private boolean mature;
     private boolean drageonnante;
     private double tauxColonisation;
-    @ManyToOne @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "parcelle_id")
+    @JsonIgnore
     private Parcelle parcelle;
 
     public Long getId() {

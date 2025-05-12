@@ -1,7 +1,8 @@
 package com.example.simulation_potager.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
-import java.util.List;
 
 @Entity
 public class Dispositif {
@@ -16,6 +17,7 @@ public class Dispositif {
     // Relation OneToOne vers la parcelle concernée
     @OneToOne
     @JoinColumn(name = "parcelle_id", unique = true)
+    @JsonIgnore
     private Parcelle parcelle;
 
     // Liste des programmes d'activation
