@@ -1,5 +1,6 @@
 package com.example.simulation_potager.Controller;
 
+import com.example.simulation_potager.Entity.Parcelle;
 import com.example.simulation_potager.Entity.Plante;
 import com.example.simulation_potager.Service.PlanteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/plantes")
@@ -19,6 +21,10 @@ public class PlanteController {
         return planteService.getToutesLesPlantes();
     }
 
+    @GetMapping("/{id}")
+    public Optional<Plante> getPlanteById(@PathVariable Long id) {
+        return planteService.getPlanteById(id);
+    }
     @PostMapping
     public Plante ajouterPlante(@RequestBody Plante plante) {
         return planteService.ajouterPlante(plante);

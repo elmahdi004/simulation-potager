@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PlanteService {
@@ -21,5 +22,9 @@ public class PlanteService {
 
     public void supprimerPlante(Long id) {
         planteRepository.deleteById(id);
+    }
+
+    public Optional<Plante> getPlanteById(Long id){
+        return planteRepository.findById(id);
     }
 }

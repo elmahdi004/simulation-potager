@@ -6,4 +6,5 @@ export default {
   getById: (id) => axios.get(`${API_URL}/${id}`),
   create: (plot) => axios.post(API_URL, plot),
   delete: (id) => axios.delete(`${API_URL}/${id}`),
+  stepSimulation: () => axios.post("http://localhost:8080/api/simulation/step"),
 };

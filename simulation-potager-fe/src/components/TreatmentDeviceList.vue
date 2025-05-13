@@ -16,37 +16,32 @@
             <span v-else-if="device.type === 'Insecticide'">🧴</span>
             <span v-else>🔧</span>
           </span>
-          <h3 class="text-xl font-semibold text-gray-800">{{ device.type }}</h3>
+          <h3 class="text-xl font-semibold text-gray-800">
+            {{ device.type || "Dispositif" }}
+          </h3>
         </div>
         <div class="text-gray-700 mb-2">
-          <span class="font-semibold">Programme d'activation :</span>
+          <span class="font-semibold">Programmes d'activation :</span>
           <ul class="ml-4 mt-1 list-disc">
-            <li>
-              Début :
-              <span class="font-medium">{{ device.program.start }}</span>
-            </li>
-            <li>
-              Durée :
-              <span class="font-medium">{{ device.program.duration }} min</span>
-            </li>
-            <li>
-              Type de traitement :
-              <span class="font-medium">{{
-                device.program.treatmentType
-              }}</span>
+            <li v-for="program in device.programmes" :key="program.id">
+              Début : <span class="font-medium">{{ program.startStep }}</span
+              >, Durée :
+              <span class="font-medium">{{ program.duration }} pas</span>, Type
+              : <span class="font-medium">{{ program.type }}</span>
             </li>
           </ul>
         </div>
         <div class="text-gray-700">
-          <span class="font-semibold">Parcelles concernées :</span>
-          <div class="flex flex-wrap mt-1">
-            <span
-              v-for="plot in device.affectedPlots"
-              :key="plot"
-              class="bg-purple-100 text-purple-700 rounded-full px-3 py-0.5 text-xs font-bold mr-2 mb-2"
-              >{{ plot }}</span
-            >
-          </div>
+          <span class="font-semibold">Parcelle centrale :</span>
+          <span
+            class="bg-purple-100 text-purple-700 rounded-full px-3 py-0.5 text-xs font-bold mr-2 mb-2"
+          >
+            ({{ device.parcelle?.x }}, {{ device.parcelle?.y }})
+          </span>
+        </div>
+        <div class="text-gray-700 mt-2">
+          <span class="font-semibold">Rayon d'action :</span>
+          <span class="font-medium">{{ device.rayon }}</span>
         </div>
       </div>
     </div>
@@ -56,38 +51,16 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "TreatmentDeviceList",
-  data() {
-    return {
-      devices: [
-        {
-          id: 1,
-          type: "Arrosage",
-          program: { start: "08:00", duration: 10, treatmentType: "Eau" },
-          affectedPlots: ["A1", "A2", "B1"],
-        },
-        {
-          id: 2,
-          type: "Engrais",
-          program: { start: "09:00", duration: 5, treatmentType: "Engrais" },
-          affectedPlots: ["A3", "B2"],
-        },
-        {
-          id: 3,
-          type: "Insecticide",
-          program: {
-            start: "10:00",
-            duration: 7,
-            treatmentType: "Insecticide",
-          },
-          affectedPlots: ["A4", "B3", "B4"],
-        },
-      ],
-    };
-  },
-};
+<script setup>
+import { ref, onMounted } from "vue";
+import deviceService from "../services/deviceService";
+
+const devices = ref([]);
+
+onMounted(async () => {
+  const res = await deviceService.getAll();
+  devices.value = res.data;
+});
 </script>
 
 <style scoped></style>

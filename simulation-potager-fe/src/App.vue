@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import PlantList from "./components/PlantList.vue";
 import PlantDetail from "./components/PlantDetail.vue";
 import InsectList from "./components/InsectList.vue";
@@ -9,14 +9,62 @@ import TreatmentDeviceList from "./components/TreatmentDeviceList.vue";
 import SimulationControl from "./components/SimulationControl.vue";
 import SimulationStatus from "./components/SimulationStatus.vue";
 import plotService from "./services/plotService";
+import plantService from "./services/plantService";
+import insectService from "./services/insectService";
+import deviceService from "./services/deviceService";
 
 const plots = ref([]);
+const plotGridRef = ref(null);
+const plants = ref([]);
+const insects = ref([]);
+let selectedPlant = ref(null);
+let selectedInsect = ref(null);
+const currentStep = ref(0);
+const devices = ref([]);
 
 onMounted(async () => {
   const res = await plotService.getAll();
   console.log("Fetched plots:", res.data, Array.isArray(res.data));
   plots.value = Array.isArray(res.data) ? res.data : Object.values(res.data);
+  // Fetch devices on mount
+  const deviceRes = await deviceService.getAll();
+  devices.value = deviceRes.data;
 });
+
+async function handleSimulationStep() {
+  if (plotGridRef.value && plotGridRef.value.handleSimulationStep) {
+    await plotGridRef.value.handleSimulationStep();
+  }
+  // Fetch updated plants and insects
+  const [plantRes, insectRes, deviceRes] = await Promise.all([
+    plantService.getAll(),
+    insectService.getAll(),
+    deviceService.getAll(),
+  ]);
+  plants.value = plantRes.data;
+  insects.value = insectRes.data;
+  devices.value = deviceRes.data;
+
+  // Re-link selected plant/insect to the updated object
+  if (selectedPlant.value) {
+    selectedPlant.value =
+      plants.value.find((p) => p.id === selectedPlant.value.id) || null;
+  }
+  if (selectedInsect.value) {
+    selectedInsect.value =
+      insects.value.find((i) => i.id === selectedInsect.value.id) || null;
+  }
+  // Increment simulation step
+  currentStep.value++;
+}
+
+const simulationStatus = computed(() => ({
+  step: currentStep.value,
+  plants: plants.value.length,
+  insects: insects.value.length,
+  devices: devices.value.length,
+  summary: "La simulation progresse normalement. Aucun incident détecté.",
+}));
 </script>
 
 <template>
@@ -55,7 +103,7 @@ onMounted(async () => {
       <!-- Center: Plot + Controls -->
       <section class="col-span-6 flex flex-col space-y-6">
         <div class="bg-white/90 rounded-2xl shadow p-5 flex-1 overflow-hidden">
-          <PlotGrid :plots="plots" @selectPlot="selectPlot" />
+          <PlotGrid ref="plotGridRef" :plots="plots" @selectPlot="selectPlot" />
         </div>
         <!-- <div class="bg-white/90 rounded-2xl shadow p-5">
           <SimulationControl
@@ -69,11 +117,7 @@ onMounted(async () => {
         class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white/90 rounded-2xl shadow-lg p-4 z-50"
         style="width: 90%; max-width: 400px"
       >
-        <SimulationControl
-          @start="startSimulation"
-          @pause="pauseSimulation"
-          @step="stepSimulation"
-        />
+        <SimulationControl @simulation-step="handleSimulationStep" />
       </div>
       <!-- Right sidebar: Stats & Devices -->
       <aside class="col-span-3 flex flex-col space-y-6 gap-y-4">

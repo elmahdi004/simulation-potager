@@ -12,8 +12,10 @@ onMounted(async () => {
 
 // Listen for simulation steps
 const handleSimulationStep = async () => {
-  const res = await plotService.getAll();
+  await plotService.stepSimulation(); // Advance simulation on backend
+  const res = await plotService.getAll(); // Fetch updated state
   plots.value = res.data;
+  console.log("Has Benn Updated");
 };
 
 defineExpose({
@@ -56,7 +58,11 @@ function getParcelle(x, y) {
                   :key="parcelle.id"
                   class="w-full h-full bg-green-100 rounded-lg shadow flex flex-col items-center justify-center relative hover:bg-green-200 transition-colors cursor-pointer group"
                 >
-                  <span class="text-2xl">🌱</span>
+                  <span
+                    v-if="parcelle.plantes && parcelle.plantes.length > 0"
+                    class="text-2xl"
+                    >🌱</span
+                  >
                   <span class="text-xs font-semibold text-green-700 mt-1">
                     {{
                       parcelle.plantes && parcelle.plantes.length > 0

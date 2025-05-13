@@ -34,21 +34,22 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "SimulationStatus",
-  data() {
-    return {
-      status: {
-        step: 12,
-        plants: 8,
-        insects: 15,
-        devices: 3,
-        summary: "La simulation progresse normalement. Aucun incident détecté.",
-      },
-    };
+<script setup>
+import { defineProps } from "vue";
+
+const props = defineProps({
+  status: {
+    type: Object,
+    required: true,
+    default: () => ({
+      step: 0,
+      plants: 0,
+      insects: 0,
+      devices: 0,
+      summary: "",
+    }),
   },
-};
+});
 </script>
 
 <style scoped></style>

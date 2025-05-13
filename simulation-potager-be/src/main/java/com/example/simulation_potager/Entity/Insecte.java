@@ -2,6 +2,7 @@ package com.example.simulation_potager.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
@@ -21,10 +22,12 @@ public class Insecte {
 
     private double resistanceInsecticide; // probabilité de survivre à l'insecticide (0.0 à 1.0)
 
-    // Lien avec la parcelle où se trouve l’insecte
+    private int stepsWithoutFeeding = 0;
+
+    // Lien avec la parcelle où se trouve l'insecte
     @ManyToOne
     @JoinColumn(name = "parcelle_id")
-    @JsonIgnore
+    @JsonIgnoreProperties(value = "insectes")
     private Parcelle parcelle;
 
     // Getters & Setters
@@ -83,5 +86,13 @@ public class Insecte {
 
     public void setParcelle(Parcelle parcelle) {
         this.parcelle = parcelle;
+    }
+
+    public int getStepsWithoutFeeding() {
+        return stepsWithoutFeeding;
+    }
+
+    public void setStepsWithoutFeeding(int stepsWithoutFeeding) {
+        this.stepsWithoutFeeding = stepsWithoutFeeding;
     }
 }
