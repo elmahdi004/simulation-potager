@@ -127,7 +127,7 @@ const simulationStatus = computed(() => ({
         <section
           class="bg-white/90 rounded-2xl shadow p-5 flex-1 overflow-y-auto"
         >
-          <TreatmentDeviceList :devices="devices" />
+          <TreatmentDeviceList :devices="devices" :currentStep="currentStep" />
         </section>
         <section class="bg-white/90 rounded-2xl shadow p-5 flex-1">
           <PlantDetail v-if="selectedPlant" :plant="selectedPlant" />

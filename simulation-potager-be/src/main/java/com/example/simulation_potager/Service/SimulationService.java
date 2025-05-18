@@ -10,6 +10,7 @@ import com.example.simulation_potager.Entity.Insecte;
 import com.example.simulation_potager.Repository.InsecteRepository;
 import com.example.simulation_potager.Entity.Dispositif;
 import com.example.simulation_potager.Repository.DispositifRepository;
+import com.example.simulation_potager.Entity.ProgrammeTraitement;
 
 import java.util.List;
 
@@ -23,6 +24,8 @@ public class SimulationService {
     private InsecteRepository insecteRepository;
     @Autowired
     private DispositifRepository dispositifRepository;
+
+    private int currentStep = 0;
 
     public void step() {
         // 1. Age plants and handle maturity
@@ -113,25 +116,62 @@ public class SimulationService {
             insecteRepository.save(insecte);
         }
 
-        // 4. Treatment devices: apply watering (Arrosage)
+        // 4. Treatment devices: apply only if active in current step
         List<Dispositif> dispositifs = dispositifRepository.findAll();
         for (Dispositif dispositif : dispositifs) {
-            // For now, always active (expand with schedule logic if needed)
+            boolean isActive = false;
+            String activeType = null;
+            if (dispositif.getProgrammes() != null) {
+                for (ProgrammeTraitement prog : dispositif.getProgrammes()) {
+                    int start = prog.getStartStep();
+                    int end = start + prog.getDuration();
+                    if (currentStep >= start && currentStep < end) {
+                        isActive = true;
+                        activeType = prog.getType();
+                        break;
+                    }
+                }
+            }
+            if (!isActive) continue;
+
             Parcelle center = dispositif.getParcelle();
             int rayon = dispositif.getRayon();
-            String type = dispositif.getClass().getSimpleName(); // Or use a type field if available
 
             for (Parcelle parcelle : parcelles) {
                 int dx = Math.abs(parcelle.getX() - center.getX());
                 int dy = Math.abs(parcelle.getY() - center.getY());
-                if (dx + dy <= rayon) { // Manhattan distance
-                    // For now, only handle watering
-                    parcelle.setHumidite(Math.min(1.0, parcelle.getHumidite() + 0.3)); // Increase humidity
-                    parcelleRepository.save(parcelle);
+                if (dx + dy <= rayon) {
+                    if ("Arrosage".equalsIgnoreCase(activeType)) {
+                        parcelle.setHumidite(Math.min(1.0, parcelle.getHumidite() + 0.3));
+                        parcelleRepository.save(parcelle);
+                    }
+                    if ("Insecticide".equalsIgnoreCase(activeType)) {
+                        if (parcelle.getInsectes() != null) {
+                            for (Insecte insecte : parcelle.getInsectes()) {
+                                // Insect has a chance to survive based on resistance
+                                if (Math.random() > insecte.getResistanceInsecticide()) {
+                                    insecteRepository.delete(insecte);
+                                } else {
+                                    // Optionally, reduce health instead of deleting
+                                    insecte.setSante(Math.max(0, insecte.getSante() - 5));
+                                    insecteRepository.save(insecte);
+                                }
+                            }
+                        }
+                    }
+                    if ("Engrais".equalsIgnoreCase(activeType)) {
+                        if (parcelle.getPlantes() != null) {
+                            for (Plante plante : parcelle.getPlantes()) {
+                                // Fertilizer effect: grow faster (gain extra age)
+                                plante.setAge(plante.getAge() + 1);
+                                planteRepository.save(plante);
+                            }
+                        }
+                    }
                 }
             }
         }
-
-        // TODO: Add logic for insects and treatments
+        // Increment simulation step
+        currentStep++;
     }
 } 

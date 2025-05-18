@@ -23,11 +23,23 @@
         <div class="text-gray-700 mb-2">
           <span class="font-semibold">Programmes d'activation :</span>
           <ul class="ml-4 mt-1 list-disc">
-            <li v-for="program in device.programmes" :key="program.id">
+            <li
+              v-for="program in device.programmes"
+              :key="program.id"
+              :class="{
+                'bg-green-100 border-l-4 border-green-500 pl-2':
+                  isProgramActive(program),
+              }"
+            >
               Début : <span class="font-medium">{{ program.startStep }}</span
               >, Durée :
               <span class="font-medium">{{ program.duration }} pas</span>, Type
               : <span class="font-medium">{{ program.type }}</span>
+              <span
+                v-if="isProgramActive(program)"
+                class="ml-2 text-green-600 font-bold"
+                >● Actif</span
+              >
             </li>
           </ul>
         </div>
@@ -54,8 +66,23 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import deviceService from "../services/deviceService";
+import { defineProps } from "vue";
 
 const devices = ref([]);
+
+const props = defineProps({
+  currentStep: {
+    type: Number,
+    required: true,
+  },
+});
+
+function isProgramActive(program) {
+  return (
+    props.currentStep >= program.startStep &&
+    props.currentStep < program.startStep + program.duration
+  );
+}
 
 onMounted(async () => {
   const res = await deviceService.getAll();
