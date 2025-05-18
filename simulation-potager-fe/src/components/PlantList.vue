@@ -41,8 +41,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted,watch } from "vue";
 import plantService from "../services/plantService";
+
+const props = defineProps({
+  plants: {
+    type: Array,
+    default: () => [],
+  },
+});
 
 const plants = ref([]);
 
@@ -50,6 +57,12 @@ onMounted(async () => {
   const res = await plantService.getAll();
   plants.value = res.data;
 });
+watch(
+  () => props.plants,
+  (newVal) => {
+    plants.value = newVal;
+  }
+);
 </script>
 
 <style scoped></style>

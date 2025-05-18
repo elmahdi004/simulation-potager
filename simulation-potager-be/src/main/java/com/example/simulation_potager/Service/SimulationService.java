@@ -28,28 +28,49 @@ public class SimulationService {
     private int currentStep = 0;
 
     public void step() {
-        // 1. Age plants and handle maturity
         List<Plante> plantes = planteRepository.findAll();
+        List<Parcelle> parcelles = parcelleRepository.findAll();
+        List<Insecte> insectes = insecteRepository.findAll();
+        List<Dispositif> dispositifs = dispositifRepository.findAll();
+
+        ageAndFruitPlants(plantes);
+        drageonnantesColonization(parcelles);
+        insectBehavior(insectes, parcelles);
+        applyDevices(dispositifs, parcelles);
+        insectProliferation(parcelles);
+        insectColonization(parcelles);
+
+        currentStep++;
+    }
+
+    /**
+     * Ages all plants, checks for maturity, and increases fruit count for mature plants.
+     * Vieillit toutes les plantes, vérifie la maturité et augmente le nombre de fruits pour les plantes matures.
+     * يقوم بتقدم عمر جميع النباتات، يتحقق من النضج، ويزيد عدد الثمار للنباتات الناضجة.
+     */
+    private void ageAndFruitPlants(List<Plante> plantes) {
         for (Plante plante : plantes) {
             plante.setAge(plante.getAge() + 1);
             if (plante.getAge() >= plante.getAgeMaturite()) {
                 plante.setMature(true);
             }
-            // Fruiting logic: if mature, produce fruits
             if (plante.isMature()) {
                 plante.setFruits(plante.getFruits() + 1);
             }
             planteRepository.save(plante);
         }
+    }
 
-        // 2. Drageonnantes (spreading) plant colonization
-        List<Parcelle> parcelles = parcelleRepository.findAll();
+    /**
+     * Handles drageonnantes (spreading) plant colonization to neighboring plots.
+     * Gère la colonisation des plantes drageonnantes vers les parcelles voisines.
+     * يدير انتشار النباتات الجذريّة إلى القطع المجاورة.
+     */
+    private void drageonnantesColonization(List<Parcelle> parcelles) {
         for (Parcelle parcelle : parcelles) {
             if (parcelle.getPlantes() == null) continue;
             for (Plante plante : parcelle.getPlantes()) {
                 if (plante.isMature() && plante.isDrageonnante()) {
-                    // Check 4 neighbors (up, down, left, right)
-                    System.out.println("The Plantes is Mature");
                     int[][] directions = {{0,1},{1,0},{0,-1},{-1,0}};
                     for (int[] dir : directions) {
                         int nx = parcelle.getX() + dir[0];
@@ -59,10 +80,7 @@ public class SimulationService {
                             .findFirst()
                             .orElse(null);
                         if (neighbor != null && (neighbor.getPlantes() == null || neighbor.getPlantes().isEmpty())) {
-                            System.out.println("He does not have any plantes");
-                            // Try to colonize
                             if (Math.random() < plante.getTauxColonisation()) {
-                                System.out.println("i will create a new plante");
                                 Plante newPlant = new Plante();
                                 newPlant.setEspece(plante.getEspece());
                                 newPlant.setAge(0);
@@ -78,32 +96,30 @@ public class SimulationService {
                 }
             }
         }
+    }
 
-        // 3. Insect behavior: feeding, health, death, movement
-        List<Insecte> insectes = insecteRepository.findAll();
+    /**
+     * Handles insect feeding, health, death, and movement.
+     * Gère l'alimentation, la santé, la mort et le déplacement des insectes.
+     * يدير تغذية الحشرات، صحتها، موتها، وحركتها.
+     */
+    private void insectBehavior(List<Insecte> insectes, List<Parcelle> parcelles) {
         for (Insecte insecte : insectes) {
             Parcelle currentParcelle = insecte.getParcelle();
             boolean fed = false;
-
-            // Feeding: if there is at least one plant on the current plot
             if (currentParcelle != null && currentParcelle.getPlantes() != null && !currentParcelle.getPlantes().isEmpty()) {
                 fed = true;
-                insecte.setSante(Math.min(10, insecte.getSante() + 1)); // Gain health, max 10
-                insecte.setStepsWithoutFeeding(0); // Reset starvation counter
+                insecte.setSante(Math.min(10, insecte.getSante() + 1));
+                insecte.setStepsWithoutFeeding(0);
             } else {
-                // Not fed
-                insecte.setSante(insecte.getSante() - 1); // Lose health
+                insecte.setSante(insecte.getSante() - 1);
                 insecte.setStepsWithoutFeeding(insecte.getStepsWithoutFeeding() + 1);
             }
-
-            // Death: if health <= 0 or not fed for 5 steps
             if (insecte.getSante() <= 0 || insecte.getStepsWithoutFeeding() >= 5) {
                 insecteRepository.delete(insecte);
                 continue;
             }
-
-            // Movement: move to a random neighboring plot based on mobility
-            if (Math.random() < insecte.getMobilite()) { // mobilite should be a value between 0 and 1
+            if (Math.random() < insecte.getMobilite()) {
                 int[][] directions = {{0,1},{1,0},{0,-1},{-1,0}};
                 int dirIdx = (int)(Math.random() * 4);
                 int nx = currentParcelle.getX() + directions[dirIdx][0];
@@ -116,12 +132,16 @@ public class SimulationService {
                     insecte.setParcelle(neighbor);
                 }
             }
-
             insecteRepository.save(insecte);
         }
+    }
 
-        // 4. Treatment devices: apply only if active in current step
-        List<Dispositif> dispositifs = dispositifRepository.findAll();
+    /**
+     * Applies device effects (watering, insecticide, fertilizer) to affected plots if active.
+     * Applique les effets des dispositifs (arrosage, insecticide, engrais) aux parcelles concernées si actifs.
+     * يطبق تأثيرات الأجهزة (الري، المبيد الحشري، السماد) على القطع المتأثرة إذا كانت نشطة.
+     */
+    private void applyDevices(List<Dispositif> dispositifs, List<Parcelle> parcelles) {
         for (Dispositif dispositif : dispositifs) {
             boolean isActive = false;
             String activeType = null;
@@ -137,10 +157,8 @@ public class SimulationService {
                 }
             }
             if (!isActive) continue;
-
             Parcelle center = dispositif.getParcelle();
             int rayon = dispositif.getRayon();
-
             for (Parcelle parcelle : parcelles) {
                 int dx = Math.abs(parcelle.getX() - center.getX());
                 int dy = Math.abs(parcelle.getY() - center.getY());
@@ -152,11 +170,9 @@ public class SimulationService {
                     if ("Insecticide".equalsIgnoreCase(activeType)) {
                         if (parcelle.getInsectes() != null) {
                             for (Insecte insecte : parcelle.getInsectes()) {
-                                // Insect has a chance to survive based on resistance
                                 if (Math.random() > insecte.getResistanceInsecticide()) {
                                     insecteRepository.delete(insecte);
                                 } else {
-                                    // Optionally, reduce health instead of deleting
                                     insecte.setSante(Math.max(0, insecte.getSante() - 5));
                                     insecteRepository.save(insecte);
                                 }
@@ -166,7 +182,6 @@ public class SimulationService {
                     if ("Engrais".equalsIgnoreCase(activeType)) {
                         if (parcelle.getPlantes() != null) {
                             for (Plante plante : parcelle.getPlantes()) {
-                                // Fertilizer effect: grow faster (gain extra age)
                                 plante.setAge(plante.getAge() + 1);
                                 planteRepository.save(plante);
                             }
@@ -175,15 +190,21 @@ public class SimulationService {
                 }
             }
         }
+    }
 
-        // 3.5. Insect proliferation (reproduction)
+    /**
+     * Handles insect reproduction (proliferation) on the same plot.
+     * Gère la reproduction (prolifération) des insectes sur la même parcelle.
+     * يدير تكاثر الحشرات في نفس القطعة.
+     */
+    private void insectProliferation(List<Parcelle> parcelles) {
         for (Parcelle parcelle : parcelles) {
             List<Insecte> insects = parcelle.getInsectes();
             if (insects == null) continue;
-           long males = insects.stream().filter(i -> "Male".equalsIgnoreCase(i.getSexe())).count();
-           long females = insects.stream().filter(i -> "Femelle".equalsIgnoreCase(i.getSexe())).count();
-           if (males > 0 && females > 0) {
-                if (Math.random() < 0.3) { // 30% chance per step
+            long males = insects.stream().filter(i -> "Male".equalsIgnoreCase(i.getSexe())).count();
+            long females = insects.stream().filter(i -> "Femelle".equalsIgnoreCase(i.getSexe())).count();
+            if (males > 0 && females > 0) {
+                if (Math.random() < 0.3) {
                     Insecte newInsect = new Insecte();
                     newInsect.setEspece(insects.get(0).getEspece());
                     newInsect.setSexe(Math.random() < 0.5 ? "Male" : "Femelle");
@@ -192,11 +213,43 @@ public class SimulationService {
                     newInsect.setResistanceInsecticide(insects.get(0).getResistanceInsecticide());
                     newInsect.setParcelle(parcelle);
                     insecteRepository.save(newInsect);
-               }
+                }
             }
         }
+    }
 
-        // Increment simulation step
-        currentStep++;
+    /**
+     * Handles insect colonization of new neighboring plots.
+     * Gère la colonisation des insectes vers de nouvelles parcelles voisines.
+     * يدير استعمار الحشرات لقطع مجاورة جديدة.
+     */
+    private void insectColonization(List<Parcelle> parcelles) {
+        for (Parcelle parcelle : parcelles) {
+            List<Insecte> insects = parcelle.getInsectes();
+            if (insects == null || insects.isEmpty()) continue;
+            for (Insecte parent : insects) {
+                int[][] directions = {{0,1},{1,0},{0,-1},{-1,0}};
+                for (int[] dir : directions) {
+                    int nx = parcelle.getX() + dir[0];
+                    int ny = parcelle.getY() + dir[1];
+                    Parcelle neighbor = parcelles.stream()
+                        .filter(p -> p.getX() == nx && p.getY() == ny)
+                        .findFirst()
+                        .orElse(null);
+                    if (neighbor != null) {
+                        if ((neighbor.getInsectes() == null || neighbor.getInsectes().isEmpty()) && Math.random() < 0.2) {
+                            Insecte newInsect = new Insecte();
+                            newInsect.setEspece(parent.getEspece());
+                            newInsect.setSexe(Math.random() < 0.5 ? "Male" : "Femelle");
+                            newInsect.setSante(10);
+                            newInsect.setMobilite(parent.getMobilite());
+                            newInsect.setResistanceInsecticide(parent.getResistanceInsecticide());
+                            newInsect.setParcelle(neighbor);
+                            insecteRepository.save(newInsect);
+                        }
+                    }
+                }
+            }
+        }
     }
 } 

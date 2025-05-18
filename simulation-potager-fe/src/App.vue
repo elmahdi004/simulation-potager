@@ -24,26 +24,16 @@ const devices = ref([]);
 
 onMounted(async () => {
   const res = await plotService.getAll();
-  console.log("Fetched plots:", res.data, Array.isArray(res.data));
   plots.value = Array.isArray(res.data) ? res.data : Object.values(res.data);
   // Fetch devices on mount
-  const deviceRes = await deviceService.getAll();
-  devices.value = deviceRes.data;
+  await getData();
 });
 
 async function handleSimulationStep() {
   if (plotGridRef.value && plotGridRef.value.handleSimulationStep) {
     await plotGridRef.value.handleSimulationStep();
   }
-  // Fetch updated plants and insects
-  const [plantRes, insectRes, deviceRes] = await Promise.all([
-    plantService.getAll(),
-    insectService.getAll(),
-    deviceService.getAll(),
-  ]);
-  plants.value = plantRes.data;
-  insects.value = insectRes.data;
-  devices.value = deviceRes.data;
+  await getData();
 
   // Re-link selected plant/insect to the updated object
   if (selectedPlant.value) {
@@ -65,6 +55,17 @@ const simulationStatus = computed(() => ({
   devices: devices.value.length,
   summary: "La simulation progresse normalement. Aucun incident détecté.",
 }));
+
+const getData = async () => {
+  const [plantRes, insectRes, deviceRes] = await Promise.all([
+    plantService.getAll(),
+    insectService.getAll(),
+    deviceService.getAll(),
+  ]);
+  plants.value = plantRes.data;
+  insects.value = insectRes.data;
+  devices.value = deviceRes.data;
+};
 </script>
 
 <template>
@@ -155,6 +156,4 @@ const simulationStatus = computed(() => ({
   </div>
 </template>
 
-<style scoped>
-/* (You can drop the body rule now that everything is in a wrapping div) */
-</style>
+<style scoped></style>

@@ -45,8 +45,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import insectService from "../services/insectService";
+
+const props = defineProps({
+  insects: {
+    type: Array,
+    default: () => [],
+  },
+});
 
 const insects = ref([]);
 
@@ -54,6 +61,12 @@ onMounted(async () => {
   const res = await insectService.getAll();
   insects.value = res.data;
 });
+watch(
+  () => props.insects,
+  (newVal) => {
+    insects.value = newVal;
+  }
+);
 </script>
 
 <style scoped></style>
