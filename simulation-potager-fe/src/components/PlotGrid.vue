@@ -63,6 +63,16 @@ function getParcelle(x, y) {
                     class="text-2xl"
                     >🌱</span
                   >
+                  <span
+                    v-if="
+                      parcelle.plantes &&
+                      parcelle.plantes.length > 0 &&
+                      parcelle.plantes[0].fruits > 0
+                    "
+                    class="absolute top-1 left-1 text-red-500 text-lg font-bold flex items-center"
+                  >
+                    🍎 {{ parcelle.plantes[0].fruits }}
+                  </span>
                   <span class="text-xs font-semibold text-green-700 mt-1">
                     {{
                       parcelle.plantes && parcelle.plantes.length > 0

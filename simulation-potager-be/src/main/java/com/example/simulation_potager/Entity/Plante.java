@@ -18,6 +18,7 @@ public class Plante {
     @JoinColumn(name = "parcelle_id")
     @JsonIgnoreProperties(value = "plantes")
     private Parcelle parcelle;
+    private int fruits = 0;
 
     public Long getId() {
         return id;
@@ -81,5 +82,13 @@ public class Plante {
 
     public void setParcelle(Parcelle parcelle) {
         this.parcelle = parcelle;
+    }
+
+    public int getFruits() {
+        return fruits;
+    }
+
+    public void setFruits(int fruits) {
+        this.fruits = fruits;
     }
 }
