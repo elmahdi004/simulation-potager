@@ -103,7 +103,13 @@ const simulationStatus = computed(() => ({
       <!-- Center: Plot + Controls -->
       <section class="col-span-6 flex flex-col space-y-6">
         <div class="bg-white/90 rounded-2xl shadow p-5 flex-1 overflow-hidden">
-          <PlotGrid ref="plotGridRef" :plots="plots" @selectPlot="selectPlot" />
+          <PlotGrid
+            ref="plotGridRef"
+            :plots="plots"
+            :devices="devices"
+            :currentStep="currentStep"
+            @selectPlot="selectPlot"
+          />
         </div>
         <!-- <div class="bg-white/90 rounded-2xl shadow p-5">
           <SimulationControl

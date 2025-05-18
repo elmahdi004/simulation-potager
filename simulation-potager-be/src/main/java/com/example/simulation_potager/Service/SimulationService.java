@@ -180,9 +180,9 @@ public class SimulationService {
         for (Parcelle parcelle : parcelles) {
             List<Insecte> insects = parcelle.getInsectes();
             if (insects == null) continue;
-//            long males = insects.stream().filter(i -> "Male".equalsIgnoreCase(i.getSexe())).count();
-//            long females = insects.stream().filter(i -> "Femelle".equalsIgnoreCase(i.getSexe())).count();
-//            if (males > 0 && females > 0) {
+           long males = insects.stream().filter(i -> "Male".equalsIgnoreCase(i.getSexe())).count();
+           long females = insects.stream().filter(i -> "Femelle".equalsIgnoreCase(i.getSexe())).count();
+           if (males > 0 && females > 0) {
                 if (Math.random() < 0.3) { // 30% chance per step
                     Insecte newInsect = new Insecte();
                     newInsect.setEspece(insects.get(0).getEspece());
@@ -192,7 +192,7 @@ public class SimulationService {
                     newInsect.setResistanceInsecticide(insects.get(0).getResistanceInsecticide());
                     newInsect.setParcelle(parcelle);
                     insecteRepository.save(newInsect);
-//                }
+               }
             }
         }
 

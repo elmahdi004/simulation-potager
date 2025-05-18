@@ -2,12 +2,46 @@
 import { computed, watch, onMounted, ref } from "vue";
 import plotService from "../services/plotService";
 
+const props = defineProps({
+  plots: { type: Array, default: () => [] },
+  devices: { type: Array, default: () => [] },
+  currentStep: { type: Number, required: true },
+});
+
 const plots = ref([]);
 
 onMounted(async () => {
   const res = await plotService.getAll();
   plots.value = res.data;
   console.log(plots.value[0]);
+});
+
+// Compute affected plots by device type
+const affectedPlots = computed(() => {
+  const result = {};
+  for (const device of props.devices) {
+    if (!device.programmes) continue;
+    for (const prog of device.programmes) {
+      const start = prog.startStep;
+      const end = start + prog.duration;
+      if (props.currentStep >= start && props.currentStep < end) {
+        const type = prog.type;
+        const center = device.parcelle;
+        const rayon = device.rayon;
+        for (let x = 1; x <= 6; x++) {
+          for (let y = 1; y <= 6; y++) {
+            if (Math.abs(center.x - x) + Math.abs(center.y - y) <= rayon) {
+              const key = `${x},${y}`;
+              if (!result[key]) result[key] = [];
+              result[key].push(type);
+              console.log(result);
+            }
+          }
+        }
+      }
+    }
+  }
+  return result;
 });
 
 // Listen for simulation steps
@@ -22,18 +56,10 @@ defineExpose({
   handleSimulationStep,
 });
 
-// const props = defineProps({
-//   plots: {
-//     type: Array,
-//     default: () => [],
-//   },
-// });
-
 const ROWS = 6;
 const COLS = 6;
 
 function getParcelle(x, y) {
-  // if (!Array.isArray(plots.value)) return null;
   return plots.value.find((p) => p.x === x && p.y === y) || null;
 }
 </script>
@@ -56,7 +82,12 @@ function getParcelle(x, y) {
                 <div
                   v-for="parcelle in [getParcelle(col, row)]"
                   :key="parcelle.id"
-                  class="w-full h-full bg-green-100 rounded-lg shadow flex flex-col items-center justify-center relative hover:bg-green-200 transition-colors cursor-pointer group"
+                  class="w-full h-full bg-green-100 rounded-lg shadow flex flex-col items-center justify-center relative hover:bg-green-200 transition-colors cursor-pointer group border-2"
+                  :class="[
+                    affectedPlots[`${col},${row}`]?.includes('Arrosage') ? 'border-blue-500' : '',
+                    affectedPlots[`${col},${row}`]?.includes('Insecticide') ? 'border-red-500' : '',
+                    affectedPlots[`${col},${row}`]?.includes('Engrais') ? 'border-green-500' : ''
+                  ]"
                 >
                   <span
                     v-if="parcelle.plantes && parcelle.plantes.length > 0"

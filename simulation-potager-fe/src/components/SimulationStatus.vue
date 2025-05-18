@@ -26,10 +26,10 @@
           status.devices
         }}</span>
       </div>
-      <div class="mt-4 p-4 bg-indigo-50 rounded-lg text-indigo-800 text-center">
+      <!-- <div class="mt-4 p-4 bg-indigo-50 rounded-lg text-indigo-800 text-center">
         <span class="font-semibold">Résumé :</span>
         <span class="ml-2">{{ status.summary }}</span>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
