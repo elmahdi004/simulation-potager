@@ -21,6 +21,7 @@ let selectedPlant = ref(null);
 let selectedInsect = ref(null);
 const currentStep = ref(0);
 const devices = ref([]);
+const selectedParcelle = ref(null);
 
 onMounted(async () => {
   const res = await plotService.getAll();
@@ -66,6 +67,10 @@ const getData = async () => {
   insects.value = insectRes.data;
   devices.value = deviceRes.data;
 };
+
+function handleSelectParcelle(parcelle) {
+  selectedParcelle.value = parcelle;
+}
 </script>
 
 <template>
@@ -82,6 +87,9 @@ const getData = async () => {
         <span class="text-sm text-gray-400"
           >Université Cadi Ayyad - EST Safi</span
         >
+        <!-- <span class="text-sm text-gray-400"
+          >Bellaziz El Mahdi</span
+        > -->
       </div>
     </header>
 
@@ -110,6 +118,7 @@ const getData = async () => {
             :devices="devices"
             :currentStep="currentStep"
             @selectPlot="selectPlot"
+            @select-parcelle="handleSelectParcelle"
           />
         </div>
         <!-- <div class="bg-white/90 rounded-2xl shadow p-5">
@@ -137,8 +146,32 @@ const getData = async () => {
           <TreatmentDeviceList :devices="devices" :currentStep="currentStep" />
         </section>
         <section class="bg-white/90 rounded-2xl shadow p-5 flex-1">
-          <PlantDetail v-if="selectedPlant" :plant="selectedPlant" />
-          <InsectDetail v-else-if="selectedInsect" :insect="selectedInsect" />
+          <div v-if="selectedParcelle">
+            <h4 class="font-bold mb-2">Détails de la parcelle ({{ selectedParcelle.x }}, {{ selectedParcelle.y }})</h4>
+            <div class="mb-2">
+              <span class="font-semibold">Plantes :</span>
+              <ul>
+                <li v-for="plante in selectedParcelle.plantes" :key="plante.id">
+                  🌱 {{ plante.espece }} (Âge: {{ plante.age }}, Fruits: {{ plante.fruits }})
+                </li>
+              </ul>
+            </div>
+            <div class="mb-2">
+              <span class="font-semibold">Insectes :</span>
+              <ul>
+                <li v-for="insecte in selectedParcelle.insectes" :key="insecte.id">
+                  🐞 {{ insecte.espece }} (Sexe: {{ insecte.sexe }}, Santé: {{ insecte.sante }})
+                </li>
+              </ul>
+            </div>
+            <div>
+              <span class="font-semibold">Dispositif :</span>
+              <span v-if="selectedParcelle.dispositif">
+                {{ selectedParcelle.dispositif.type || 'Dispositif' }} (Rayon: {{ selectedParcelle.dispositif.rayon }})
+              </span>
+              <span v-else>Aucun</span>
+            </div>
+          </div>
           <p v-else class="text-gray-500">
             Sélectionnez une plante ou un insecte.
           </p>

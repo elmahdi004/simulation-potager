@@ -84,15 +84,22 @@ function getParcelle(x, y) {
                   :key="parcelle.id"
                   class="w-full h-full bg-green-100 rounded-lg shadow flex flex-col items-center justify-center relative hover:bg-green-200 transition-colors cursor-pointer group border-2"
                   :class="[
-                    affectedPlots[`${col},${row}`]?.includes('Arrosage') ? 'border-blue-500' : '',
-                    affectedPlots[`${col},${row}`]?.includes('Insecticide') ? 'border-red-500' : '',
-                    affectedPlots[`${col},${row}`]?.includes('Engrais') ? 'border-green-500' : ''
+                    affectedPlots[`${col},${row}`]?.includes('Arrosage')
+                      ? 'border-blue-500'
+                      : '',
+                    affectedPlots[`${col},${row}`]?.includes('Insecticide')
+                      ? 'border-red-500'
+                      : '',
+                    affectedPlots[`${col},${row}`]?.includes('Engrais')
+                      ? 'border-green-500'
+                      : '',
                   ]"
+                  @click="$emit('select-parcelle', parcelle)"
                 >
                   <span
                     v-if="parcelle.plantes && parcelle.plantes.length > 0"
                     class="text-2xl"
-                    >🌱</span
+                    >{{ parcelle.plantes[0].drageonnante ? "🌿" : "🌱" }}</span
                   >
                   <span
                     v-if="
