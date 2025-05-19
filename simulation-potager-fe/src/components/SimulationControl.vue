@@ -88,9 +88,9 @@ export default {
   name: "SimulationControl",
   data() {
     return {
-      simulationState: "stopped", // 'running', 'paused', 'stopped'
+      simulationState: "stopped",
       simulationInterval: null,
-      updateInterval: 1000, // Update every second
+      updateInterval: 2000, 
     };
   },
   computed: {
@@ -108,27 +108,23 @@ export default {
   methods: {
     startSimulation() {
       this.simulationState = "running";
-      // Start the simulation cycle
       this.simulationInterval = setInterval(() => {
         this.$emit("simulation-step");
       }, this.updateInterval);
     },
     pauseSimulation() {
       this.simulationState = "paused";
-      // Clear the interval when paused
       if (this.simulationInterval) {
         clearInterval(this.simulationInterval);
         this.simulationInterval = null;
       }
     },
     stepSimulation() {
-      // Simulate a single step
       this.simulationState = "paused";
       this.$emit("simulation-step");
     },
   },
   beforeUnmount() {
-    // Clean up the interval when component is destroyed
     if (this.simulationInterval) {
       clearInterval(this.simulationInterval);
     }

@@ -44,9 +44,7 @@ public class SimulationService {
     }
 
     /**
-     * Ages all plants, checks for maturity, and increases fruit count for mature plants.
-     * Vieillit toutes les plantes, vérifie la maturité et augmente le nombre de fruits pour les plantes matures.
-     * يقوم بتقدم عمر جميع النباتات، يتحقق من النضج، ويزيد عدد الثمار للنباتات الناضجة.
+     * vérifie la maturité et augmente le nombre de fruits pour les plantes matures.
      */
     private void ageAndFruitPlants(List<Plante> plantes) {
         for (Plante plante : plantes) {
@@ -62,9 +60,7 @@ public class SimulationService {
     }
 
     /**
-     * Handles drageonnantes (spreading) plant colonization to neighboring plots.
      * Gère la colonisation des plantes drageonnantes vers les parcelles voisines.
-     * يدير انتشار النباتات الجذريّة إلى القطع المجاورة.
      */
     private void drageonnantesColonization(List<Parcelle> parcelles) {
         for (Parcelle parcelle : parcelles) {
@@ -99,9 +95,7 @@ public class SimulationService {
     }
 
     /**
-     * Handles insect feeding, health, death, and movement.
      * Gère l'alimentation, la santé, la mort et le déplacement des insectes.
-     * يدير تغذية الحشرات، صحتها، موتها، وحركتها.
      */
     private void insectBehavior(List<Insecte> insectes, List<Parcelle> parcelles) {
         for (Insecte insecte : insectes) {
@@ -119,6 +113,7 @@ public class SimulationService {
                 insecteRepository.delete(insecte);
                 continue;
             }
+            // Déplacement aléatoire :
             if (Math.random() < insecte.getMobilite()) {
                 int[][] directions = {{0,1},{1,0},{0,-1},{-1,0}};
                 int dirIdx = (int)(Math.random() * 4);
@@ -137,9 +132,7 @@ public class SimulationService {
     }
 
     /**
-     * Applies device effects (watering, insecticide, fertilizer) to affected plots if active.
      * Applique les effets des dispositifs (arrosage, insecticide, engrais) aux parcelles concernées si actifs.
-     * يطبق تأثيرات الأجهزة (الري، المبيد الحشري، السماد) على القطع المتأثرة إذا كانت نشطة.
      */
     private void applyDevices(List<Dispositif> dispositifs, List<Parcelle> parcelles) {
         for (Dispositif dispositif : dispositifs) {
@@ -193,9 +186,7 @@ public class SimulationService {
     }
 
     /**
-     * Handles insect reproduction (proliferation) on the same plot.
      * Gère la reproduction (prolifération) des insectes sur la même parcelle.
-     * يدير تكاثر الحشرات في نفس القطعة.
      */
     private void insectProliferation(List<Parcelle> parcelles) {
         for (Parcelle parcelle : parcelles) {
@@ -219,9 +210,7 @@ public class SimulationService {
     }
 
     /**
-     * Handles insect colonization of new neighboring plots.
      * Gère la colonisation des insectes vers de nouvelles parcelles voisines.
-     * يدير استعمار الحشرات لقطع مجاورة جديدة.
      */
     private void insectColonization(List<Parcelle> parcelles) {
         for (Parcelle parcelle : parcelles) {

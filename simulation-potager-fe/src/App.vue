@@ -147,27 +147,36 @@ function handleSelectParcelle(parcelle) {
         </section>
         <section class="bg-white/90 rounded-2xl shadow p-5 flex-1">
           <div v-if="selectedParcelle">
-            <h4 class="font-bold mb-2">Détails de la parcelle ({{ selectedParcelle.x }}, {{ selectedParcelle.y }})</h4>
+            <h4 class="font-bold mb-2">
+              Détails de la parcelle ({{ selectedParcelle.x }},
+              {{ selectedParcelle.y }})
+            </h4>
             <div class="mb-2">
               <span class="font-semibold">Plantes :</span>
               <ul>
                 <li v-for="plante in selectedParcelle.plantes" :key="plante.id">
-                  🌱 {{ plante.espece }} (Âge: {{ plante.age }}, Fruits: {{ plante.fruits }})
+                  🌱 {{ plante.espece }} (Âge: {{ plante.age }}, Fruits:
+                  {{ plante.fruits }})
                 </li>
               </ul>
             </div>
             <div class="mb-2">
               <span class="font-semibold">Insectes :</span>
               <ul>
-                <li v-for="insecte in selectedParcelle.insectes" :key="insecte.id">
-                  🐞 {{ insecte.espece }} (Sexe: {{ insecte.sexe }}, Santé: {{ insecte.sante }})
+                <li
+                  v-for="insecte in selectedParcelle.insectes"
+                  :key="insecte.id"
+                >
+                  🐞 {{ insecte.espece }} (Sexe: {{ insecte.sexe }}, Santé:
+                  {{ insecte.sante }})
                 </li>
               </ul>
             </div>
             <div>
               <span class="font-semibold">Dispositif :</span>
               <span v-if="selectedParcelle.dispositif">
-                {{ selectedParcelle.dispositif.type || 'Dispositif' }} (Rayon: {{ selectedParcelle.dispositif.rayon }})
+                {{ selectedParcelle.dispositif.type || "Dispositif" }} (Rayon:
+                {{ selectedParcelle.dispositif.rayon }})
               </span>
               <span v-else>Aucun</span>
             </div>

@@ -12,7 +12,7 @@
         <div
           class="w-16 h-16 bg-green-200 rounded-full flex items-center justify-center mb-4"
         >
-          <span class="text-2xl font-bold text-green-700">🌱</span>
+          <span class="text-2xl font-bold text-green-700">{{ plant.drageonnante ? "🌿" : "🌱" }}</span>
         </div>
         <h3 class="text-xl font-semibold text-gray-800 mb-2">
           {{ plant.species }}
@@ -21,15 +21,18 @@
           Âge : <span class="font-medium">{{ plant.age }}</span>
         </p>
         <p class="text-gray-600">
+          Âge Maturite: <span class="font-medium">{{ plant.ageMaturite }}</span>
+        </p>
+        <p class="text-gray-600">
           Maturité :
           <span
             :class="
-              plant.isMature
+              plant.mature
                 ? 'text-green-600 font-semibold'
                 : 'text-yellow-500 font-semibold'
             "
           >
-            {{ plant.isMature ? "Oui" : "Non" }}
+            {{ plant.mature ? "Oui" : "Non" }}
           </span>
         </p>
       </div>

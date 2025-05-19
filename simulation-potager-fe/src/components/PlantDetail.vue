@@ -5,7 +5,7 @@
     <div
       class="w-20 h-20 bg-green-200 rounded-full flex items-center justify-center mb-6"
     >
-      <span class="text-4xl">🌱</span>
+      <span class="text-4xl">{{ prop.plant.drageonnante ? "🌿" : "🌱" }}</span>
     </div>
     <h2 class="text-2xl font-bold text-green-700 mb-2">
       {{ props.plant.species }}
